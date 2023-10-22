@@ -943,7 +943,7 @@ class Master extends DBConnection
 		// // echo json_encode($_SESSION['customer_code']);
 		// exit;
 		$update = $this->conn->query("DELETE from `customer_order`  where DATE(date_created) < CURDATE() ");
-		$update = $this->conn->query("UPDATE `order_list` set `delete_flag` = 1 , `delete_reason`='Order Expired' where DATE(date_created) < CURDATE() ");
+		$update = $this->conn->query("UPDATE `order_list` set `delete_flag` = 1 , `delete_reason`='Order Expired' where DATE(date_created) < CURDATE() and status = 2 ");
 
 
 
@@ -1046,7 +1046,7 @@ class Master extends DBConnection
 		$customer_code = isset($_SESSION['customer_code']) || !empty($_SESSION['customer_code']) ? $_SESSION['customer_code'] : '';
 
 
-		$update = $this->conn->query("UPDATE `order_list` set `delete_flag` = 1 , `delete_reason`='Order Expired' where DATE(date_created) < CURDATE() ");
+		$update = $this->conn->query("UPDATE `order_list` set `delete_flag` = 1 , `delete_reason`='Order Expired' where DATE(date_created) < CURDATE() and status = 2 ");
 
 		$customer_where = !empty($customer_code) ? 'and customer_code = ' . $customer_code : 'and id is null';
 
