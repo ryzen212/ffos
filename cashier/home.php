@@ -2,6 +2,8 @@
 $from_date = date("Y-m-01");
 $to_date = date("Y-m-t");
 $type = '';
+ $user_id = ($_SESSION['userdata']['id']);
+
 ?>
 
 <style>
@@ -177,16 +179,16 @@ $type = '';
   </div>
 </div>
 
-<script type="text/javascript" src="http://localhost/ffos/plugins/chartjs/chart.umd.min.js"></script>
+<script type="text/javascript" src="../plugins/chartjs/chart.umd.min.js"></script>
 
-<script src="http://localhost/ffos/plugins/chartjs/chartjs-adapter-date-fns.bundle.min.js"></script>
+<script src="../plugins/chartjs/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script>
   // setup 
   load_chart()
   function load_chart() {
     <?php
 
-    $stock = $conn->query("SELECT DATE_FORMAT(date_created, '%W %M %e %Y') as date_created ,SUM(quantity) AS quantity, SUM(total_amount) AS total_amount,user_id  FROM `order_list` as ol LEFT JOIN `order_items` as ot ON ol.id = ot.order_id where (date(date_created) BETWEEN '$from_date' AND '$to_date')  and status = 1   and delete_flag != 1   GROUP BY YEAR(date_created), MONTH(date_created), DAY(date_created);");
+    $stock = $conn->query("SELECT DATE_FORMAT(date_created, '%W %M %e %Y') as date_created ,SUM(quantity) AS quantity, total_amount,user_id  FROM `order_list` as ol LEFT JOIN `order_items` as ot ON ol.id = ot.order_id where status = 1 and user_id = '{$_settings->userdata('id')}'   and delete_flag != 1   GROUP BY YEAR(date_created), MONTH(date_created), DAY(date_created);");
 
     ?>
     const sales = [<?php
@@ -204,7 +206,7 @@ $type = '';
     const qty = [<?php
 
 
-    $stock = $conn->query("SELECT DATE_FORMAT(date_created, '%W %M %e %Y') as date_created ,SUM(quantity) AS quantity, SUM(total_amount) AS total_amount,user_id  FROM `order_list` as ol LEFT JOIN `order_items` as ot ON ol.id = ot.order_id where (date(date_created) BETWEEN '$from_date' AND '$to_date')  and status = 1  and delete_flag != 1 GROUP BY YEAR(date_created), MONTH(date_created), DAY(date_created);");
+    $stock = $conn->query("SELECT DATE_FORMAT(date_created, '%W %M %e %Y') as date_created ,quantity, SUM(total_amount) AS total_amount,user_id  FROM `order_list` as ol LEFT JOIN `order_items` as ot ON ol.id = ot.order_id where status = 1  and delete_flag != 1 and user_id = '{$_settings->userdata('id')}'    GROUP BY YEAR(date_created), MONTH(date_created), DAY(date_created);");
 
 
     while ($row = $stock->fetch_assoc()) {
@@ -278,7 +280,7 @@ $type = '';
         plugins: {
           title: {
             display: true,
-            text: '<?= date("Y F") . ' Sales Report' ?>'
+            text: ' Sales Report',
           },
           legend: {
             display: false
@@ -301,7 +303,7 @@ $type = '';
         plugins: {
           title: {
             display: true,
-            text: '<?= date("Y F") . ' Product Sales Report' ?>'
+            text: '<?= ' Product Sales Report' ?>'
           },
           legend: {
             display: false

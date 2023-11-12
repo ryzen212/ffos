@@ -11,7 +11,11 @@
     .sidebar-mini-md .main-header::before {
         margin-left: 0rem !important;
     }
+
 }
+.container-fluid{
+      overflow: auto !important;
+    }
 </style>
 <?php require_once('inc/header.php') ?>
   <body class="sidebar-mini layout-fixed control-sidebar-slide-open layout-navbar-fixed sidebar-mini-md sidebar-mini-xs text-sm" data-new-gr-c-s-check-loaded="14.991.0" data-gr-ext-installed="" style="height: auto;">
@@ -101,7 +105,24 @@
       <!-- /.content-wrapper -->
  
       <?php require_once('inc/footer.php') ?>
-  
+      <script type="text/javascript">
+
+
+jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+	"currency-pre": function ( a ) {
+		a = (a==="-") ? 0 : a.replace( /[^\d\-\.]/g, "" );
+		return parseFloat( a );
+	},
+
+	"currency-asc": function ( a, b ) {
+		return a - b;
+	},
+
+	"currency-desc": function ( a, b ) {
+		return b - a;
+	}
+} );
+      </script>
       
   </body>
 </html>

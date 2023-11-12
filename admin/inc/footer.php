@@ -97,6 +97,10 @@
 <script src="<?php echo base_url ?>plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="<?php echo base_url ?>plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 <script src="<?php echo base_url ?>plugins/datatables/dataTables.buttons.min.js"></script>
+<script src="<?php echo base_url ?>plugins/datatables/pdfmake.min.js"></script>
+<script src="<?php echo base_url ?>plugins/datatables/vfs_fonts.js"></script>
+<script src="<?php echo base_url ?>plugins/datatables/buttons.html5.min.js"></script>
+<script src="<?php echo base_url ?>plugins/datatables/buttons.print.min.js"></script>
 <script src="<?php echo base_url ?>plugins/selectize/js_selectize.min.js"></script>
 
 

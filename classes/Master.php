@@ -643,9 +643,19 @@ class Master extends DBConnection
 				if (!isset($menu_arr[1])) {
 					$menu_arr[1] = '1';
 				}
+				$check = $this->conn->query("SELECT * FROM `discount_item` where item_id = '{$menu_arr[0]}'  and type = {$menu_arr[1]}   and exp_date > CURDATE() and qty > 0  ")->num_rows;
+				if ($check > 0) {
+
+					$discount_update = "UPDATE discount_item SET qty = qty-1 WHERE item_id = '{$menu_arr[0]}'  and type = {$menu_arr[1]} ";
+					$discount_update = $this->conn->query($discount_update);
+				}
+
+
+
 				$data .= "('{$oid}', '{$menu_arr[0]}', '{$price[$k]}', '{$quantity[$k]}', '{$menu_arr[1]}')";
 
 			}
+
 
 			$sql2 = "INSERT INTO `order_items` (`order_id`, `menu_id`, `price`, `quantity`,`variants`) VALUES {$data}";
 			$save2 = $this->conn->query($sql2);
@@ -654,6 +664,13 @@ class Master extends DBConnection
 					$coupon_update = "UPDATE coupon_list SET qty = qty-1 WHERE id IN (" . implode(',', $coupon_ids) . ")";
 					$coupon_update = $this->conn->query($coupon_update);
 				}
+
+
+				if (!empty($coupon_ids)) {
+					$coupon_update = "UPDATE coupon_list SET qty = qty-1 WHERE id IN (" . implode(',', $coupon_ids) . ")";
+					$coupon_update = $this->conn->query($coupon_update);
+				}
+
 
 				$resp['status'] = 'success';
 				$resp['msg'] = ' Order has been placed.';
@@ -993,7 +1010,14 @@ class Master extends DBConnection
 
 			}
 		}
-		$orders = $this->conn->query("SELECT id, `queue`,menu_note,status FROM `order_list` where `status` != 1 {$swhere}  and delete_flag!=1 order by id desc ,abs(unix_timestamp(date_created)) asc limit 10");
+
+		if ($this->settings->userdata('type') != 3) {
+			$orders = $this->conn->query("SELECT id, `queue`,menu_note,status FROM `order_list` where `status` != 1 {$swhere}  and delete_flag!=1 and user_id={$this->settings->userdata('id')}  order by id desc ,abs(unix_timestamp(date_created)) asc limit 10");
+
+		} else {
+			$orders = $this->conn->query("SELECT id, `queue`,menu_note,status FROM `order_list` where `status` != 1 {$swhere}  and delete_flag!=1 order by id desc ,abs(unix_timestamp(date_created)) asc limit 10");
+
+		}
 		$data = [];
 		while ($row = $orders->fetch_assoc()) {
 			$items = $this->conn->query("SELECT oi.*, concat(m.code,': ', m.name) as `item`,m.var_price FROM `order_items` oi inner join menu_list m on oi.menu_id = m.id where  order_id = '{$row['id']}'");
@@ -1018,19 +1042,32 @@ class Master extends DBConnection
 			$row['item_arr'] = $item_arr;
 			$data[] = $row;
 		}
+		if ($this->settings->userdata('type') != 3) {
 
-		$count = $this->conn->query("SELECT * from order_list where  status = 2  and delete_flag!=1");
-		$resp['count_que'] = $count->num_rows;
+			$count = $this->conn->query("SELECT * from order_list where  status = 2  and delete_flag!=1 and user_id={$this->settings->userdata('id')}  ");
+			$resp['count_que'] = $count->num_rows;
+			$count = $this->conn->query("SELECT * from order_list where status = 3 and delete_flag!=1 and user_id={$this->settings->userdata('id')}  ");
+			$resp['count_prepare'] = $count->num_rows;
+			$count = $this->conn->query("SELECT * from order_list where status = 4  and delete_flag!=1 and user_id={$this->settings->userdata('id')}  ");
+			$resp['count_serve'] = $count->num_rows;
 
 
-		$count = $this->conn->query("SELECT * from order_list where status = 3 and delete_flag!=1");
-		$resp['count_prepare'] = $count->num_rows;
+		} else {
+
+			$count = $this->conn->query("SELECT * from order_list where  status = 2  and delete_flag!=1 ");
+			$resp['count_que'] = $count->num_rows;
+			$count = $this->conn->query("SELECT * from order_list where  status = 3  and delete_flag!=1 ");
+			$resp['count_prepare'] = $count->num_rows;
+			$count = $this->conn->query("SELECT * from order_list where  status = 4  and delete_flag!=1 ");
+			$resp['count_serve'] = $count->num_rows;
+		}
 
 
 
 
-		$count = $this->conn->query("SELECT * from order_list where status = 4  and delete_flag!=1");
-		$resp['count_serve'] = $count->num_rows;
+
+
+
 
 
 		$resp['status'] = 'success';

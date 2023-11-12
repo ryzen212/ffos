@@ -34,7 +34,7 @@ while ($row = $menus->fetch_assoc()) {
     <?php foreach ($variants as $values) {
         $badge_dis = '';
         $price = format_num($values['price'], 2);
-        $dis_item = $conn->query("SELECT type,amount FROM `discount_item` where  item_id =  $id and (`variant` = '" . $values['var_name'] . "' or `variant` = 'All') ");
+        $dis_item = $conn->query("SELECT type,amount FROM `discount_item` where  item_id =  $id and   exp_date > CURDATE() and qty > 0 and (`variant` = '" . $values['var_name'] . "' or `variant` = 'All') ");
         if ($dis_item->num_rows >= 1) {
             while ($dis = $dis_item->fetch_assoc()) {
                 if ($dis['type'] == 1) {

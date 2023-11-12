@@ -177,8 +177,8 @@ $type = '';
   </div>
 </div>
 
-<script type="text/javascript" src="http://localhost/ffos/plugins/chartjs/chart.umd.min.js"></script>
-<script src="http://localhost/ffos/plugins/chartjs/chartjs-adapter-date-fns.bundle.min.js"></script>
+<script type="text/javascript" src="../ffos/plugins/chartjs/chart.umd.min.js"></script>
+<script src="../plugins/chartjs/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script>
   // setup 
   load_chart()

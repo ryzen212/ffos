@@ -90,21 +90,15 @@
 			<div class="card-body">
 				<div class="container-fluid">
 					<table class="table table-hover table-striped table-bordered" id="list">
-						<colgroup>
-							<col width="5%">
-							<col width="15%">
-							<col width="15%">
-							<col width="15%">
-							<col width="20%">
-							<col width="15%">
-							<col width="10%">
-						</colgroup>
+
 						<thead>
+					
 							<tr>
 								<th>#</th>
 								<th>Date Created</th>
 								<th>Transaction Code</th>
 								<th>Queue</th>
+								<th>Items</th>
 								<th>Total Amount</th>
 								<th>Notes</th>
 								<th>Status</th>
@@ -115,7 +109,7 @@
 							<?php
 							$i = 1;
 							$uwhere = "";
-						
+							if ($_settings->userdata('type') != '1')
 								$uwhere = " and user_id = '{$_settings->userdata('id')}' ";
 
 							$qry = $conn->query("SELECT * FROM `order_list` where  delete_flag!=1  and status!=1 {$uwhere} order by abs(unix_timestamp(date_created)) desc ");
@@ -134,42 +128,83 @@
 									<td class="">
 										<?= $row['queue'] ?>
 									</td>
+									<td class="px-1 py-1 align-left">
+                                       
+									   <?php
+									
+									   $items = $conn->query("SELECT oi.*, m.name as `item`,m.code,m.var_price FROM `order_items` oi inner join `menu_list` m on oi.menu_id = m.id where oi.order_id = '{$row['id']}'");
+									   while ($rowItem = $items->fetch_assoc()) {
+										   $rowItem['isVariants'] = false;
+										   $variants = json_decode(stripslashes($rowItem['var_price']), true);
+										   if (count($variants) > 1) {
+											   $row['isVariants'] = true;
+										   }
+										   foreach ($variants as $values) {
+											   if ($rowItem['variants'] == $values['row_id']) {
+												   echo '<li>' . $rowItem['item'] . ' : ' . $values['var_name'] . '</li>';
+											   }
+
+
+										   }
+
+										   // echo $row['price'];
+							   
+									   }
+
+									   ?>
+
+							 
+							   </td>
 									<td class="text-right">
 										<?= format_num($row['total_amount'], 2) ?>
 									</td>
 									<td class="text-right">
-									<?= (empty($row['notes'])) ? ('N/A') : ($row['notes']); ?>
+										<?= (empty($row['notes'])) ? ('N/A') : ($row['notes']); ?>
 									</td>
+
 									<td class="text-center">
 										<?php
-											switch ($row['status']) {
-												case 2:
-													echo '<span class="badge badge-warning border-gradient-danger px-3 border">Queued</span>';
-													break;
-	
-												case 3:
-													echo '<span class="badge badge-info border-gradient-info px-3 border">Preparing</span>';
-													break;
-												case 4:
-													echo '<span class="badge badge-success border-gradient-success text-light px-3 border">Ready to Serve</span>';
-													break;
-												default:
-													echo '<span class="badge badge-light border-gradient-light border px-3 border">N/A</span>';
-													break;
-	
-											}
+										switch ($row['status']) {
+											case 2:
+												echo '<span class="badge badge-warning border-gradient-danger px-3 border">Queued</span>';
+												break;
+
+											case 3:
+												echo '<span class="badge badge-info border-gradient-info px-3 border">Preparing</span>';
+												break;
+											case 4:
+												echo '<span class="badge badge-success border-gradient-success text-light px-3 border">Ready to Serve</span>';
+												break;
+											default:
+												echo '<span class="badge badge-light border-gradient-light border px-3 border">N/A</span>';
+												break;
+
+										}
 										?>
 									</td>
-									<td class="text-center">
-										<div class="btn-group btn-group-sm">
-											<a class="btn btn-flat btn-sm btn-light bg-gradient-light border view_receipt"
-												href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"
-												title="Print Receipt"><small><span class="fa fa-receipt"></span></small></a>
-											<a class="btn btn-flat btn-sm btn-danger bg-gradient-danger delete_data"
-												href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"
-												title="Delete Order"><small><span class="fa fa-trash"></span></small></a>
-										</div>
-									</td>
+									<?php if ($row['user_id'] == $_settings->userdata('id')) { ?>
+										<td class="text-center">
+											<div class="btn-group btn-group-sm">
+												<a class="btn btn-flat btn-sm btn-light bg-gradient-light border view_receipt"
+													href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"
+													title="Print Receipt"><small><span class="fa fa-receipt"></span></small></a>
+												<a class="btn btn-flat btn-sm btn-danger bg-gradient-danger delete_data"
+													href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"
+													title="Delete Order"><small><span class="fa fa-trash"></span></small></a>
+											</div>
+										</td>
+									<?php } else {
+										$stmt = $conn->prepare("SELECT CONCAT(`firstname` ,' ',`lastname`)as name from users where id = ? ");
+										$stmt->bind_param('s', $row['user_id']);
+										$stmt->execute();
+										$result = $stmt->get_result();
+										$value = $result->fetch_object();
+
+										?>
+										<td class="text-center">
+											<?= 'Cashier name :' . $value->name; ?>
+										</td>
+									<?php } ?>
 								</tr>
 							<?php endwhile; ?>
 						</tbody>
@@ -186,23 +221,17 @@
 			<div class="card-body">
 				<div class="container-fluid">
 					<table class="table table-hover table-striped table-bordered" id="list">
-						<colgroup>
-							<col width="5%">
-							<col width="15%">
-							<col width="15%">
-							<col width="15%">
-							<col width="20%">
-							<col width="15%">
 
-						</colgroup>
 						<thead>
 							<tr>
 								<th>#</th>
 								<th>Date Created</th>
 								<th>Transaction Code</th>
 								<th>Queue</th>
+								<th>Items</th>
 								<th>Total Amount</th>
 								<th>Notes</th>
+								<th>Cashier Name</th>
 								<th>Status</th>
 
 							</tr>
@@ -211,7 +240,7 @@
 							<?php
 							$i = 1;
 							$uwhere = "";
-				
+							if ($_settings->userdata('type') != '1')
 								$uwhere = " and user_id = '{$_settings->userdata('id')}' ";
 
 							$qry = $conn->query("SELECT * FROM `order_list` where  status = 1 and delete_flag !=1 {$uwhere} order by abs(unix_timestamp(date_created)) desc ");
@@ -230,11 +259,49 @@
 									<td class="">
 										<?= $row['queue'] ?>
 									</td>
+									<td class="px-1 py-1 align-left">
+                                       
+									   <?php
+									
+									   $items = $conn->query("SELECT oi.*, m.name as `item`,m.code,m.var_price FROM `order_items` oi inner join `menu_list` m on oi.menu_id = m.id where oi.order_id = '{$row['id']}'");
+									   while ($rowItem = $items->fetch_assoc()) {
+										   $rowItem['isVariants'] = false;
+										   $variants = json_decode(stripslashes($rowItem['var_price']), true);
+										   if (count($variants) > 1) {
+											   $row['isVariants'] = true;
+										   }
+										   foreach ($variants as $values) {
+											   if ($rowItem['variants'] == $values['row_id']) {
+												   echo '<li>' . $rowItem['item'] . ' : ' . $values['var_name'] . '</li>';
+											   }
+
+
+										   }
+
+										   // echo $row['price'];
+							   
+									   }
+
+									   ?>
+
+							 
+							   </td>
 									<td class="text-right">
 										<?= format_num($row['total_amount'], 2) ?>
 									</td>
 									<td class="text-right">
-									<?= (empty($row['notes'])) ? ('') : ($row['notes']); ?>
+										<?= (empty($row['notes'])) ? ('N/A') : ($row['notes']); ?>
+									</td>
+									<?php
+									$stmt = $conn->prepare("SELECT CONCAT(`firstname` ,' ',`lastname`)as name from users where id = ? ");
+									$stmt->bind_param('s', $row['user_id']);
+									$stmt->execute();
+									$result = $stmt->get_result();
+									$value = $result->fetch_object();
+
+									?>
+									<td class="text-center">
+										<?= 'Cashier name :' . $value->name; ?>
 									</td>
 									<td class="text-center">
 										<span class="badge badge-success border-gradient-success px-3 border">Served</span>
@@ -256,23 +323,17 @@
 			<div class="card-body">
 				<div class="container-fluid">
 					<table class="table table-hover table-striped table-bordered" id="list">
-						<colgroup>
-							<col width="5%">
-							<col width="15%">
-							<col width="15%">
-							<col width="15%">
-							<col width="20%">
-							<col width="15%">
 
-						</colgroup>
 						<thead>
 							<tr>
 								<th>#</th>
 								<th>Date Created</th>
 								<th>Transaction Code</th>
 								<th>Queue</th>
+								<th>Items</th>
 								<th>Total Amount</th>
 								<th>Notes</th>
+								<th>Cashier Name</th>
 								<th>Reason</th>
 
 							</tr>
@@ -281,7 +342,7 @@
 							<?php
 							$i = 1;
 							$uwhere = "";
-						
+							if ($_settings->userdata('type') != '1')
 								$uwhere = " and user_id = '{$_settings->userdata('id')}' ";
 
 							$qry = $conn->query("SELECT * FROM `order_list` where  delete_flag =1  {$uwhere} order by abs(unix_timestamp(date_created)) desc ");
@@ -300,12 +361,51 @@
 									<td class="">
 										<?= $row['queue'] ?>
 									</td>
+									<td class="px-1 py-1 align-left">
+                                       
+									   <?php
+									
+									   $items = $conn->query("SELECT oi.*, m.name as `item`,m.code,m.var_price FROM `order_items` oi inner join `menu_list` m on oi.menu_id = m.id where oi.order_id = '{$row['id']}'");
+									   while ($rowItem = $items->fetch_assoc()) {
+										   $rowItem['isVariants'] = false;
+										   $variants = json_decode(stripslashes($rowItem['var_price']), true);
+										   if (count($variants) > 1) {
+											   $row['isVariants'] = true;
+										   }
+										   foreach ($variants as $values) {
+											   if ($rowItem['variants'] == $values['row_id']) {
+												   echo '<li>' . $rowItem['item'] . ' : ' . $values['var_name'] . '</li>';
+											   }
+
+
+										   }
+
+										   // echo $row['price'];
+							   
+									   }
+
+									   ?>
+
+							 
+							   </td>
 									<td class="text-right">
 										<?= format_num($row['total_amount'], 2) ?>
 									</td>
 									<td class="text-right">
-									<?= (empty($row['notes'])) ? ('N/A') : ($row['notes']); ?>
+										<?= (empty($row['notes'])) ? ('N/A') : ($row['notes']); ?>
 									</td>
+									<?php
+									$stmt = $conn->prepare("SELECT CONCAT(`firstname` ,' ',`lastname`)as name from users where id = ? ");
+									$stmt->bind_param('s', $row['user_id']);
+									$stmt->execute();
+									$result = $stmt->get_result();
+									$value = $result->fetch_object();
+
+									?>
+									<td class="text-center">
+										<?= 'Cashier name :' . $value->name; ?>
+									</td>
+
 									<td class="text-center">
 										<?= htmlspecialchars($row['delete_reason']) ?>
 									</td>

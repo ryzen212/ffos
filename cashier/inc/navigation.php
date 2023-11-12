@@ -61,7 +61,7 @@
                   </a>
                 </li>
               <?php endif; ?>
-              <?php if ($_settings->userdata('type') != 2): ?>
+              <!-- <?php if ($_settings->userdata('type') != 3): ?> -->
                 <li class="nav-item dropdown">
                   <a href="./?page=kitchen" class="nav-link nav-kitchen">
                     <i class="nav-icon fas fa-table"></i>

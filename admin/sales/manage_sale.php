@@ -262,7 +262,7 @@
                                                 $button = 'item-btn';
                                                 $modal = '';
                                                 $badge_dis = '';
-                                                $dis_item = $conn->query("SELECT type,amount FROM `discount_item` where  item_id =  $id and `variant` = '" . $values['var_name'] . "' ");
+                                                $dis_item = $conn->query("SELECT type,amount FROM `discount_item` where  item_id =  $id and exp_date > CURDATE() and qty > 0 and `variant` = '" . $values['var_name'] . "' ");
                                                 if ($dis_item->num_rows >= 1) {
                                                     while ($dis = $dis_item->fetch_assoc()) {
                                                         if ($dis['type'] == 1) {
@@ -290,7 +290,8 @@
                                                 class="btn btn-default btn-block btn-xs  px-2 shadow bg-white border  <?= $button ?>"
                                                 type="button" data-id='<?= $row['id'] ?>' data-price='<?= $price ?>'
                                                 <?= $modal ?>>
-                                                <img src="<?php echo (base_url . $row['menu_img']) ?>" alt="" id="cimg">
+                                                <img src="<?php echo (validate_image($row['menu_img'])) ?>" alt=""
+                                                    id="cimg">
                                                 <h6 class="m-0 truncate-1">
                                                     <?= $row['code'] ?>
                                                 </h6>

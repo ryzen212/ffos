@@ -172,21 +172,19 @@ $type = '';
   <div class="chartBox mb-2">
     <canvas id="myChart"></canvas>
   </div>
-  <div class="chartBox">
-    <canvas id="qtyChart"></canvas>
-  </div>
+
 </div>
 
-<script type="text/javascript" src="http://localhost/ffos/plugins/chartjs/chart.umd.min.js"></script>
+<script type="text/javascript" src="../plugins/chartjs/chart.umd.min.js"></script>
 
-<script src="http://localhost/ffos/plugins/chartjs/chartjs-adapter-date-fns.bundle.min.js"></script>
+<script src="../plugins/chartjs/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script>
   // setup 
   load_chart()
   function load_chart() {
     <?php
 
-    $stock = $conn->query("SELECT DATE_FORMAT(date_created, '%W %M %e %Y') as date_created ,SUM(quantity) AS quantity, SUM(total_amount) AS total_amount,user_id  FROM `order_list` as ol LEFT JOIN `order_items` as ot ON ol.id = ot.order_id where (date(date_created) BETWEEN '$from_date' AND '$to_date')  and status = 1   and delete_flag != 1   GROUP BY YEAR(date_created), MONTH(date_created), DAY(date_created);");
+    $stock = $conn->query("SELECT DATE_FORMAT(date_created, '%W %M %e %Y') as date_created ,SUM(quantity) AS quantity, SUM(total_amount) AS total_amount,user_id  FROM `order_list` as ol LEFT JOIN `order_items` as ot ON ol.id = ot.order_id where status = 1   and delete_flag != 1   GROUP BY YEAR(date_created), MONTH(date_created), DAY(date_created);");
 
     ?>
     const sales = [<?php
@@ -204,7 +202,7 @@ $type = '';
     const qty = [<?php
 
 
-    $stock = $conn->query("SELECT DATE_FORMAT(date_created, '%W %M %e %Y') as date_created ,SUM(quantity) AS quantity, SUM(total_amount) AS total_amount,user_id  FROM `order_list` as ol LEFT JOIN `order_items` as ot ON ol.id = ot.order_id where (date(date_created) BETWEEN '$from_date' AND '$to_date')  and status = 1  and delete_flag != 1 GROUP BY YEAR(date_created), MONTH(date_created), DAY(date_created);");
+    $stock = $conn->query("SELECT DATE_FORMAT(date_created, '%W %M %e %Y') as date_created ,SUM(quantity) AS quantity, SUM(total_amount) AS total_amount,user_id  FROM `order_list` as ol LEFT JOIN `order_items` as ot ON ol.id = ot.order_id where status = 1  and delete_flag != 1 GROUP BY YEAR(date_created), MONTH(date_created), DAY(date_created);");
 
 
     while ($row = $stock->fetch_assoc()) {
@@ -243,32 +241,7 @@ $type = '';
         borderWidth: 1
       }]
     };
-    const data_qty = {
-      // labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      datasets: [{
-        label: 'Total Product Sales',
-        data: qty,
-        backgroundColor: [
-          'rgba(255, 26, 104, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)',
-          'rgba(0, 0, 0, 0.2)'
-        ],
-        borderColor: [
-          'rgba(255, 26, 104, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-          'rgba(0, 0, 0, 1)'
-        ],
-        borderWidth: 1
-      }]
-    };
+ 
 
     // config 
     const config = {
@@ -278,7 +251,7 @@ $type = '';
         plugins: {
           title: {
             display: true,
-            text: '<?= date("Y F") . ' Sales Report' ?>'
+            text: '<?=' Sales Report' ?>'
           },
           legend: {
             display: false
@@ -294,37 +267,12 @@ $type = '';
 
     };
 
-    const config_qty = {
-      type: 'line',
-      data: data_qty,
-      options: {
-        plugins: {
-          title: {
-            display: true,
-            text: '<?= date("Y F") . ' Product Sales Report' ?>'
-          },
-          legend: {
-            display: false
-          }
-        },
-        scales: {
-
-          y: {
-            beginAtZero: true
-          }
-        }
-      },
-
-    };
+   
 
     // render init block
     const myChart = new Chart(
       document.getElementById('myChart'),
       config
-    );
-    const qtyChart = new Chart(
-      document.getElementById('qtyChart'),
-      config_qty
     );
 
     // Instantly assign Chart.js version

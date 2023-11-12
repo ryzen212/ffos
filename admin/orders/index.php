@@ -92,11 +92,13 @@
 					<table class="table table-hover table-striped table-bordered" id="list">
 
 						<thead>
+					
 							<tr>
 								<th>#</th>
 								<th>Date Created</th>
 								<th>Transaction Code</th>
 								<th>Queue</th>
+								<th>Items</th>
 								<th>Total Amount</th>
 								<th>Notes</th>
 								<th>Status</th>
@@ -126,6 +128,33 @@
 									<td class="">
 										<?= $row['queue'] ?>
 									</td>
+									<td class="px-1 py-1 align-left">
+                                       
+									   <?php
+									
+									   $items = $conn->query("SELECT oi.*, m.name as `item`,m.code,m.var_price FROM `order_items` oi inner join `menu_list` m on oi.menu_id = m.id where oi.order_id = '{$row['id']}'");
+									   while ($rowItem = $items->fetch_assoc()) {
+										   $rowItem['isVariants'] = false;
+										   $variants = json_decode(stripslashes($rowItem['var_price']), true);
+										   if (count($variants) > 1) {
+											   $row['isVariants'] = true;
+										   }
+										   foreach ($variants as $values) {
+											   if ($rowItem['variants'] == $values['row_id']) {
+												   echo '<li>' . $rowItem['item'] . ' : ' . $values['var_name'] . '</li>';
+											   }
+
+
+										   }
+
+										   // echo $row['price'];
+							   
+									   }
+
+									   ?>
+
+							 
+							   </td>
 									<td class="text-right">
 										<?= format_num($row['total_amount'], 2) ?>
 									</td>
@@ -199,6 +228,7 @@
 								<th>Date Created</th>
 								<th>Transaction Code</th>
 								<th>Queue</th>
+								<th>Items</th>
 								<th>Total Amount</th>
 								<th>Notes</th>
 								<th>Cashier Name</th>
@@ -229,6 +259,33 @@
 									<td class="">
 										<?= $row['queue'] ?>
 									</td>
+									<td class="px-1 py-1 align-left">
+                                       
+									   <?php
+									
+									   $items = $conn->query("SELECT oi.*, m.name as `item`,m.code,m.var_price FROM `order_items` oi inner join `menu_list` m on oi.menu_id = m.id where oi.order_id = '{$row['id']}'");
+									   while ($rowItem = $items->fetch_assoc()) {
+										   $rowItem['isVariants'] = false;
+										   $variants = json_decode(stripslashes($rowItem['var_price']), true);
+										   if (count($variants) > 1) {
+											   $row['isVariants'] = true;
+										   }
+										   foreach ($variants as $values) {
+											   if ($rowItem['variants'] == $values['row_id']) {
+												   echo '<li>' . $rowItem['item'] . ' : ' . $values['var_name'] . '</li>';
+											   }
+
+
+										   }
+
+										   // echo $row['price'];
+							   
+									   }
+
+									   ?>
+
+							 
+							   </td>
 									<td class="text-right">
 										<?= format_num($row['total_amount'], 2) ?>
 									</td>
@@ -273,6 +330,7 @@
 								<th>Date Created</th>
 								<th>Transaction Code</th>
 								<th>Queue</th>
+								<th>Items</th>
 								<th>Total Amount</th>
 								<th>Notes</th>
 								<th>Cashier Name</th>
@@ -303,6 +361,33 @@
 									<td class="">
 										<?= $row['queue'] ?>
 									</td>
+									<td class="px-1 py-1 align-left">
+                                       
+									   <?php
+									
+									   $items = $conn->query("SELECT oi.*, m.name as `item`,m.code,m.var_price FROM `order_items` oi inner join `menu_list` m on oi.menu_id = m.id where oi.order_id = '{$row['id']}'");
+									   while ($rowItem = $items->fetch_assoc()) {
+										   $rowItem['isVariants'] = false;
+										   $variants = json_decode(stripslashes($rowItem['var_price']), true);
+										   if (count($variants) > 1) {
+											   $row['isVariants'] = true;
+										   }
+										   foreach ($variants as $values) {
+											   if ($rowItem['variants'] == $values['row_id']) {
+												   echo '<li>' . $rowItem['item'] . ' : ' . $values['var_name'] . '</li>';
+											   }
+
+
+										   }
+
+										   // echo $row['price'];
+							   
+									   }
+
+									   ?>
+
+							 
+							   </td>
 									<td class="text-right">
 										<?= format_num($row['total_amount'], 2) ?>
 									</td>
@@ -376,6 +461,7 @@
 </div>
 <script>
 	$(document).ready(function () {
+
 		$('.delete_data').click(function () {
 			$('.err-msg').remove();
 			$('#deleteModal').modal('show')

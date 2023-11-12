@@ -205,8 +205,8 @@
 
                         if (data.status == 2) {
                             tab = '#orderQue-field';
-                            // card.find('.order-served').text('Prepare')
-                            card.find('.order-served').remove()
+                            card.find('.order-served').text('Prepare')
+                            // card.find('.order-served').remove()
                             process = 'Prepare';
                             card.find('.order-served').addClass("quebtn");
                             card.find('.order-list-header').addClass("quebtn");
@@ -217,7 +217,8 @@
                         if (data.status == 3) {
                             tab = '#orderPrepare-field';
                             card.find('.order-served').text('To Serve')
-                            card.find('.order-served').remove()
+                   
+                            // card.find('.order-served').remove()
                             process = 'Serve';
                             card.find('.order-served').removeClass("quebtn").addClass("prebtn");
                             card.find('.order-list-header').removeClass("quebtn").addClass("prebtn");
@@ -233,8 +234,8 @@
                         }
                         if (resp.item_status == 2) {
                             tab = '#orderQue-field';
-                            // card.find('.order-served').text('Prepare')
-                            card.find('.order-served').remove()
+                            card.find('.order-served').text('Prepare')
+                            // card.find('.order-served').remove()
                             process = 'Prepare';
                             card.find('.order-served').addClass("quebtn");
                             card.find('.order-list-header').addClass("quebtn");
@@ -242,7 +243,8 @@
                         }
                         if (resp.item_status == 3) {
                             tab = '#orderPrepare-field';
-                            card.find('.order-served').remove()
+                            card.find('.order-served').text('Serve')
+                            // card.find('.order-served').remove()
                             process = 'Serve';
                             card.find('.order-served').removeClass("quebtn").addClass("prebtn");
                             card.find('.order-list-header').removeClass("quebtn").addClass("prebtn");
